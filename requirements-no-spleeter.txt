@@ -1,0 +1,18 @@
+# Requirements for ARM Macs (M1/M2/M3) - without Spleeter
+# Use this if you're on an ARM Mac and can't install Spleeter
+
+# Audio Processing
+librosa>=0.10.0
+pydub>=0.25.1
+numpy>=1.24.0,<2.0.0
+scipy>=1.10.0
+
+# Audio Playback
+pygame>=2.5.0
+
+# Servo Control (Raspberry Pi)
+pigpio>=1.78
+
+# Utilities
+pyyaml>=6.0
+tqdm>=4.65.0

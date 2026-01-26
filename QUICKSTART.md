@@ -11,6 +11,26 @@ Get your singing servos up and running in 5 minutes!
 
 ## Installation
 
+### On Desktop (Mac/Linux/Windows)
+
+1. **Clone and setup virtual environment**
+```bash
+git clone <your-repo-url> singing-servos
+cd singing-servos
+
+# Create virtual environment
+python3 -m venv venv
+
+# Activate it
+source venv/bin/activate  # Mac/Linux
+# OR on Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### On Raspberry Pi
+
 1. **Clone and setup**
 ```bash
 git clone <your-repo-url> singing-servos

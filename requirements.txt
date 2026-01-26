@@ -1,9 +1,14 @@
 # Audio Processing
+# Note: Spleeter doesn't work on ARM Macs (M1/M2/M3) - TensorFlow incompatibility
+# Install separately if on Intel Mac or Linux
 librosa>=0.10.0
-spleeter>=2.3.0
 pydub>=0.25.1
-numpy>=1.24.0
+numpy>=1.24.0,<2.0.0
 scipy>=1.10.0
+
+# Spleeter - ONLY install on Intel Macs or Linux, NOT on ARM Macs
+# Uncomment if you're on Intel Mac/Linux:
+# spleeter==2.4.2
 
 # Audio Playback
 pygame>=2.5.0

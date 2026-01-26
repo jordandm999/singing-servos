@@ -18,7 +18,18 @@ try:
     SPLEETER_AVAILABLE = True
 except ImportError:
     SPLEETER_AVAILABLE = False
-    print("Warning: Spleeter not available. Install with: pip install spleeter")
+    print("\n" + "="*60)
+    print("WARNING: Spleeter not available")
+    print("="*60)
+    print("Spleeter doesn't work on ARM Macs (M1/M2/M3).")
+    print("\nOptions:")
+    print("1. Pre-separate vocals manually using online tools:")
+    print("   - https://vocalremover.org")
+    print("   - https://www.lalal.ai")
+    print("2. Use an Intel Mac or Linux machine for processing")
+    print("3. Process songs on your Raspberry Pi (slower)")
+    print("\nYou can still use mock mode and test everything else!")
+    print("="*60 + "\n")
 
 
 class AudioProcessor:
