@@ -1,0 +1,36 @@
+# Example configuration for a duet setup
+# Servo1 sings lead vocals, Servo2+3 sing backup/harmony
+
+servos:
+  - name: servo1
+    gpio_pin: 17
+    min_pulse: 500
+    max_pulse: 2500
+    closed_angle: 0
+    open_angle: 90
+
+  - name: servo2
+    gpio_pin: 27
+    min_pulse: 500
+    max_pulse: 2500
+    closed_angle: 0
+    open_angle: 90
+
+  - name: servo3
+    gpio_pin: 22
+    min_pulse: 500
+    max_pulse: 2500
+    closed_angle: 0
+    open_angle: 90
+
+audio:
+  sample_rate: 44100
+  vocal_separation_model: 'spleeter:2stems'  # 2stems is fastest
+  syllable_threshold: 0.02  # Lower = more sensitive
+  smoothing_window: 0.05    # Smoothing in seconds
+
+paths:
+  songs_dir: songs
+  processed_dir: processed
+  vocals_dir: processed/vocals
+  servo_data_dir: processed/servo_data

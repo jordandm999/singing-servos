@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Audio files
+songs/*.mp3
+songs/*.wav
+processed/**/*.wav
+processed/**/*.npy
+*.mp3
+*.wav
+
+# Spleeter models (downloaded at runtime)
+pretrained_models/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Keep directory structure
+!.gitkeep

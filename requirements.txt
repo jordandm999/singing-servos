@@ -1,0 +1,20 @@
+# Audio Processing
+librosa>=0.10.0
+spleeter>=2.3.0
+pydub>=0.25.1
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Audio Playback
+pygame>=2.5.0
+
+# Servo Control (Raspberry Pi)
+pigpio>=1.78
+# RPi.GPIO>=0.7.1  # Alternative if pigpio doesn't work
+
+# Utilities
+pyyaml>=6.0
+tqdm>=4.65.0
+
+# Optional: for better vocal separation (heavier, might need desktop pre-processing)
+# demucs>=4.0.0
