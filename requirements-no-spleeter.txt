@@ -13,6 +13,9 @@ pygame>=2.5.0
 # Servo Control (Raspberry Pi)
 pigpio>=1.78
 
+# Keyboard input for recording
+pynput>=1.7.6
+
 # Utilities
 pyyaml>=6.0
 tqdm>=4.65.0
