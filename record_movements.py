@@ -263,25 +263,34 @@ def main():
     print(f"Duration: {duration:.2f} seconds")
 
     # Select recording mode
-    print("\nSelect recording mode:")
-    print("  1. Record for servo1 only")
-    print("  2. Record for servo2 only")
-    print("  3. Record for servo3 only")
-    print("  4. Record for ALL servos (same movements)")
+    print("\nSelect servos to record (comma-separated):")
+    print("  Examples:")
+    print("    1       - servo1 only")
+    print("    2,3     - servo2 and servo3")
+    print("    1,2,3   - all servos")
+    print("    all     - all servos")
 
-    mode = input("> ").strip()
+    mode = input("> ").strip().lower()
 
     servo_names = []
-    if mode == '1':
-        servo_names = ['servo1']
-    elif mode == '2':
-        servo_names = ['servo2']
-    elif mode == '3':
-        servo_names = ['servo3']
-    elif mode == '4':
+    if mode == 'all':
         servo_names = ['servo1', 'servo2', 'servo3']
     else:
-        print("Invalid mode")
+        # Parse comma-separated numbers
+        for part in mode.split(','):
+            part = part.strip()
+            if part == '1':
+                servo_names.append('servo1')
+            elif part == '2':
+                servo_names.append('servo2')
+            elif part == '3':
+                servo_names.append('servo3')
+
+    # Remove duplicates while preserving order
+    servo_names = list(dict.fromkeys(servo_names))
+
+    if not servo_names:
+        print("Invalid selection. Please enter 1, 2, 3, or combinations like '2,3'")
         return 1
 
     print(f"\nWill record for: {', '.join(servo_names)}")
