@@ -201,12 +201,13 @@ class ServoPlayback:
         self.servo_data = servo_data_map
         print(f"Loaded servo data for {len(servo_data_map)} servos")
 
-    def update(self, current_time: float):
+    def update(self, current_time: float, snap_to_discrete: bool = True):
         """
         Update servo positions based on current playback time.
 
         Args:
             current_time: Current time in seconds since playback started
+            snap_to_discrete: If True, snap to discrete positions (0, 0.5, 1.0)
         """
         positions = {}
 
@@ -218,14 +219,27 @@ class ServoPlayback:
             times = data[:, 0]
             pos_values = data[:, 1]
 
-            # Find the appropriate position via interpolation
+            # Find the appropriate position
             if current_time <= times[0]:
                 position = pos_values[0]
             elif current_time >= times[-1]:
                 position = pos_values[-1]
             else:
-                # Linear interpolation
-                position = np.interp(current_time, times, pos_values)
+                # Find nearest time index (no interpolation)
+                idx = np.searchsorted(times, current_time)
+                if idx > 0 and (idx >= len(times) or
+                    abs(times[idx-1] - current_time) < abs(times[idx] - current_time)):
+                    idx = idx - 1
+                position = pos_values[idx]
+
+            # Snap to discrete positions if enabled (0, 0.5, 1.0 -> 0°, 30°, 60°)
+            if snap_to_discrete:
+                if position < 0.25:
+                    position = 0.0
+                elif position < 0.75:
+                    position = 0.5
+                else:
+                    position = 1.0
 
             positions[servo_name] = position
 
