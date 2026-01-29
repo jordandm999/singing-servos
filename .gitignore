@@ -10,13 +10,14 @@ env/
 ENV/
 *.egg-info/
 
-# Audio files
-songs/*.mp3
-songs/*.wav
-processed/**/*.wav
-processed/**/*.npy
-*.mp3
-*.wav
+# Audio files (large files - uncomment if you don't want these in repo)
+# songs/*.mp3
+# songs/*.wav
+# processed/**/*.wav
+# processed/**/*.npy
+
+# Keep separated vocals out (large files we don't need)
+processed/vocals/
 
 # Spleeter models (downloaded at runtime)
 pretrained_models/
