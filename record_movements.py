@@ -20,12 +20,10 @@ import numpy as np
 
 # CONFIGURATION
 RECORD_KEY = keyboard.KeyCode.from_char('j')  # Key to press for mouth open
-WAIT_TIME = 0.3  # Seconds - if gap is longer than this, mouth goes to 0°, else 30°
 MIN_MOVEMENT_TIME = 0.15  # Seconds - minimum time between position changes (servo speed limit)
 
-# Servo positions
-OPEN_POSITION = 60.0   # Degrees - mouth fully open
-HALF_POSITION = 30.0   # Degrees - mouth half open
+# Servo positions (binary: open or closed)
+OPEN_POSITION = 60.0   # Degrees - mouth open
 CLOSED_POSITION = 0.0  # Degrees - mouth closed
 
 
@@ -250,38 +248,22 @@ class MovementRecorder:
                         break
 
             if is_pressed:
-                # Key is pressed - fully open
-                positions[i] = 1.0  # This will map to 60°
+                # Key is pressed - open
+                positions[i] = 1.0  # Maps to 60°
             else:
-                # Key is not pressed - check if we should be at 0° or 30°
-                # Find next press
-                next_press = None
-                for press_time in press_times:
-                    if press_time > t:
-                        next_press = press_time
-                        break
-
-                if next_press is not None:
-                    gap = next_press - t
-                    if gap > WAIT_TIME:
-                        positions[i] = 0.0  # Fully closed (0°)
-                    else:
-                        positions[i] = 0.5  # Half open (30°)
-                else:
-                    positions[i] = 0.0  # End of song, closed
+                # Key is not pressed - closed
+                positions[i] = 0.0  # Maps to 0°
 
         # Combine into servo data format
         servo_data = np.column_stack([times, positions])
 
         # Print statistics before filtering
         open_time = np.sum(positions == 1.0) / len(positions) * duration
-        half_time = np.sum(positions == 0.5) / len(positions) * duration
         closed_time = np.sum(positions == 0.0) / len(positions) * duration
 
         print(f"\nMovement breakdown (before filtering):")
-        print(f"  Fully open (60°):  {open_time:.2f}s ({open_time/duration*100:.1f}%)")
-        print(f"  Half open (30°):   {half_time:.2f}s ({half_time/duration*100:.1f}%)")
-        print(f"  Closed (0°):       {closed_time:.2f}s ({closed_time/duration*100:.1f}%)")
+        print(f"  Open (60°):   {open_time:.2f}s ({open_time/duration*100:.1f}%)")
+        print(f"  Closed (0°):  {closed_time:.2f}s ({closed_time/duration*100:.1f}%)")
 
         # Filter for servo speed limitations
         servo_data = filter_servo_data(servo_data)
@@ -289,13 +271,11 @@ class MovementRecorder:
         # Print statistics after filtering
         filtered_positions = servo_data[:, 1]
         open_time = np.sum(filtered_positions == 1.0) / len(filtered_positions) * duration
-        half_time = np.sum(filtered_positions == 0.5) / len(filtered_positions) * duration
         closed_time = np.sum(filtered_positions == 0.0) / len(filtered_positions) * duration
 
         print(f"\nMovement breakdown (after filtering):")
-        print(f"  Fully open (60°):  {open_time:.2f}s ({open_time/duration*100:.1f}%)")
-        print(f"  Half open (30°):   {half_time:.2f}s ({half_time/duration*100:.1f}%)")
-        print(f"  Closed (0°):       {closed_time:.2f}s ({closed_time/duration*100:.1f}%)")
+        print(f"  Open (60°):   {open_time:.2f}s ({open_time/duration*100:.1f}%)")
+        print(f"  Closed (0°):  {closed_time:.2f}s ({closed_time/duration*100:.1f}%)")
 
         return servo_data
 
@@ -407,9 +387,8 @@ def main():
     print(f"  python3 main.py play {song_name} --mock")
     print()
     print(f"Settings used:")
-    print(f"  WAIT_TIME: {WAIT_TIME}s")
+    print(f"  Min movement time: {MIN_MOVEMENT_TIME*1000:.0f}ms")
     print(f"  Open position: {OPEN_POSITION}°")
-    print(f"  Half position: {HALF_POSITION}°")
     print(f"  Closed position: {CLOSED_POSITION}°")
     print("=" * 60 + "\n")
 

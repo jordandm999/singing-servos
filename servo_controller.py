@@ -232,12 +232,10 @@ class ServoPlayback:
                     idx = idx - 1
                 position = pos_values[idx]
 
-            # Snap to discrete positions if enabled (0, 0.5, 1.0 -> 0°, 30°, 60°)
+            # Snap to binary positions if enabled (0 or 1.0 -> 0° or 60°)
             if snap_to_discrete:
-                if position < 0.25:
+                if position < 0.5:
                     position = 0.0
-                elif position < 0.75:
-                    position = 0.5
                 else:
                     position = 1.0
 
