@@ -42,12 +42,13 @@ class Config:
 
     DEFAULT_CONFIG = {
         'servos': [
-            {'name': 'servo1', 'gpio_pin': 17, 'min_pulse': 500, 'max_pulse': 2500,
-             'closed_angle': 0, 'open_angle': 90},
-            {'name': 'servo2', 'gpio_pin': 27, 'min_pulse': 500, 'max_pulse': 2500,
-             'closed_angle': 0, 'open_angle': 90},
-            {'name': 'servo3', 'gpio_pin': 22, 'min_pulse': 500, 'max_pulse': 2500,
-             'closed_angle': 0, 'open_angle': 90},
+            # Pulse range 500-1200 gives roughly 0-60° on SG90 servos
+            {'name': 'servo1', 'gpio_pin': 17, 'min_pulse': 500, 'max_pulse': 1200,
+             'closed_angle': 0, 'open_angle': 60},
+            {'name': 'servo2', 'gpio_pin': 27, 'min_pulse': 500, 'max_pulse': 1200,
+             'closed_angle': 0, 'open_angle': 60},
+            {'name': 'servo3', 'gpio_pin': 22, 'min_pulse': 500, 'max_pulse': 1200,
+             'closed_angle': 0, 'open_angle': 60},
         ],
         'audio': {
             'sample_rate': 44100,
