@@ -21,11 +21,81 @@ import numpy as np
 # CONFIGURATION
 RECORD_KEY = keyboard.KeyCode.from_char('j')  # Key to press for mouth open
 WAIT_TIME = 0.3  # Seconds - if gap is longer than this, mouth goes to 0°, else 30°
+MIN_MOVEMENT_TIME = 0.15  # Seconds - minimum time between position changes (servo speed limit)
 
 # Servo positions
 OPEN_POSITION = 60.0   # Degrees - mouth fully open
 HALF_POSITION = 30.0   # Degrees - mouth half open
 CLOSED_POSITION = 0.0  # Degrees - mouth closed
+
+
+def filter_servo_data(servo_data: np.ndarray, min_time: float = MIN_MOVEMENT_TIME) -> np.ndarray:
+    """
+    Filter servo data to remove movements that are too fast for servos.
+
+    Args:
+        servo_data: Array of (time, position) pairs
+        min_time: Minimum time between position changes in seconds
+
+    Returns:
+        Filtered array with achievable movements only
+    """
+    if len(servo_data) < 2:
+        return servo_data
+
+    times = servo_data[:, 0]
+    positions = servo_data[:, 1]
+
+    # Find where position actually changes
+    filtered_times = [times[0]]
+    filtered_positions = [positions[0]]
+    last_change_time = times[0]
+    last_position = positions[0]
+
+    for i in range(1, len(times)):
+        current_pos = positions[i]
+        current_time = times[i]
+
+        # Check if position changed
+        if current_pos != last_position:
+            # Check if enough time has passed since last change
+            if current_time - last_change_time >= min_time:
+                filtered_times.append(current_time)
+                filtered_positions.append(current_pos)
+                last_change_time = current_time
+                last_position = current_pos
+            # If not enough time, skip this movement (keep previous position)
+
+    # Always include the final position
+    if filtered_times[-1] != times[-1]:
+        filtered_times.append(times[-1])
+        filtered_positions.append(filtered_positions[-1])
+
+    # Rebuild the full timeline at original sample rate
+    sample_rate = 50
+    num_samples = len(times)
+    new_positions = np.zeros(num_samples)
+
+    # Fill in positions based on filtered keyframes
+    filter_idx = 0
+    for i, t in enumerate(times):
+        # Advance to the appropriate filtered keyframe
+        while filter_idx < len(filtered_times) - 1 and filtered_times[filter_idx + 1] <= t:
+            filter_idx += 1
+        new_positions[i] = filtered_positions[filter_idx]
+
+    filtered_data = np.column_stack([times, new_positions])
+
+    # Count movements before and after
+    original_changes = np.sum(np.diff(positions) != 0)
+    filtered_changes = np.sum(np.diff(new_positions) != 0)
+
+    print(f"\nFiltering for servo speed (min {min_time*1000:.0f}ms between moves):")
+    print(f"  Original movements: {original_changes}")
+    print(f"  Filtered movements: {filtered_changes}")
+    print(f"  Removed: {original_changes - filtered_changes} movements that were too fast")
+
+    return filtered_data
 
 
 class MovementRecorder:
@@ -203,12 +273,26 @@ class MovementRecorder:
         # Combine into servo data format
         servo_data = np.column_stack([times, positions])
 
-        # Print statistics
+        # Print statistics before filtering
         open_time = np.sum(positions == 1.0) / len(positions) * duration
         half_time = np.sum(positions == 0.5) / len(positions) * duration
         closed_time = np.sum(positions == 0.0) / len(positions) * duration
 
-        print(f"\nMovement breakdown:")
+        print(f"\nMovement breakdown (before filtering):")
+        print(f"  Fully open (60°):  {open_time:.2f}s ({open_time/duration*100:.1f}%)")
+        print(f"  Half open (30°):   {half_time:.2f}s ({half_time/duration*100:.1f}%)")
+        print(f"  Closed (0°):       {closed_time:.2f}s ({closed_time/duration*100:.1f}%)")
+
+        # Filter for servo speed limitations
+        servo_data = filter_servo_data(servo_data)
+
+        # Print statistics after filtering
+        filtered_positions = servo_data[:, 1]
+        open_time = np.sum(filtered_positions == 1.0) / len(filtered_positions) * duration
+        half_time = np.sum(filtered_positions == 0.5) / len(filtered_positions) * duration
+        closed_time = np.sum(filtered_positions == 0.0) / len(filtered_positions) * duration
+
+        print(f"\nMovement breakdown (after filtering):")
         print(f"  Fully open (60°):  {open_time:.2f}s ({open_time/duration*100:.1f}%)")
         print(f"  Half open (30°):   {half_time:.2f}s ({half_time/duration*100:.1f}%)")
         print(f"  Closed (0°):       {closed_time:.2f}s ({closed_time/duration*100:.1f}%)")
